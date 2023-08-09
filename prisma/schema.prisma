@@ -69,7 +69,7 @@ model Transaction {
   userId        String          @map("user_id") @db.Uuid
   bankAccountId String          @map("bank_account_id") @db.Uuid
   categoryId    String?         @map("category_id") @db.Uuid
-  name          String          @unique
+  name          String
   value         Float
   date          DateTime
   type          TransactionEnum
