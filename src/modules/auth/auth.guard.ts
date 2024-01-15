@@ -28,7 +28,10 @@ export class AuthGuard implements CanActivate {
     if (isPublic) return true;
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        codeMessage: 'MSTOKEN',
+        message: 'Missing access token!',
+      });
     }
 
     try {
@@ -38,7 +41,10 @@ export class AuthGuard implements CanActivate {
 
       request['userId'] = payload.sub;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        codeMessage: 'IVTOKEN',
+        message: 'Invalid token',
+      });
     }
     return true;
   }

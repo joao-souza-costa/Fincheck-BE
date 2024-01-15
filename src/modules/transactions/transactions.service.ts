@@ -28,6 +28,9 @@ export class TransactionsService {
     }: CreateTransactionDto,
   ) {
     await this.validateOwner({ userId, bankAccountId, categoryId });
+
+    if (type === 'EXPENSE') value *= -1;
+
     return this.transactionRepo.create({
       data: {
         bankAccountId,
@@ -69,6 +72,18 @@ export class TransactionsService {
         },
         bankAccountId: filters.bankAccountId,
       },
+      include: {
+        category: {
+          select: {
+            icon: true,
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        date: 'desc',
+      },
     });
   }
 
@@ -79,8 +94,17 @@ export class TransactionsService {
   async update(
     userId: string,
     transactionId: string,
-    { bankAccountId, categoryId, name, type, value }: UpdateTransactionDto,
+    {
+      bankAccountId,
+      categoryId,
+      name,
+      value,
+      type,
+      date,
+    }: UpdateTransactionDto,
   ) {
+    if (type === 'EXPENSE') value *= -1;
+
     await this.validateOwner({
       userId,
       bankAccountId,
@@ -92,8 +116,10 @@ export class TransactionsService {
       where: { id: transactionId },
       data: {
         name,
-        type,
         value,
+        categoryId,
+        bankAccountId,
+        date,
       },
     });
   }
@@ -121,9 +147,9 @@ export class TransactionsService {
         this.transactionHelper.validateOwner(userId, transactionId),
       // eslint-disable-next-line prettier/prettier
       categoryId &&
-        this.categoryHelper.validateOwner(userId, categoryId),
+      this.categoryHelper.validateOwner(userId, categoryId),
       bankAccountId &&
-        this.bankAccountHelper.validateOwner(userId, bankAccountId),
+        this.bankAccountHelper.validateOwner(bankAccountId, userId),
     ]);
   }
 }

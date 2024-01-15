@@ -32,10 +32,26 @@ export class BankAccountsService {
     });
   }
 
-  findAll(userId: string) {
-    return this.bankAccountsRepo.findMany({
-      where: { userId },
+  async findAll(userId: string) {
+    const bankAccounts = await this.bankAccountsRepo.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        transactions: {
+          select: {
+            type: true,
+            value: true,
+            id: true,
+          },
+        },
+      },
+      orderBy: {
+        initialBalance: 'desc',
+      },
     });
+
+    return bankAccounts;
   }
 
   findOne(id: number) {
@@ -65,6 +81,7 @@ export class BankAccountsService {
       },
     });
   }
+
   async remove(userId: string, id: string) {
     await this.bankAccountsHelper.validateOwner(id, userId);
 
