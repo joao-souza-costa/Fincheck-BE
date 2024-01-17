@@ -61,7 +61,6 @@ export class TransactionsService {
       type?: TransactionTypes;
     },
   ) {
-    console.log(filters.bankAccountId);
     return this.transactionRepo.findMany({
       where: {
         userId,
