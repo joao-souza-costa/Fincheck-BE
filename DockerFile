@@ -1,7 +1,5 @@
 FROM node:18-alpine
 
-USER node
-
 RUN mdkdir -p /home/node/app
 
 COPY --chown=node:node . .
@@ -13,4 +11,4 @@ ENV NODE_ENV=prod
 
 EXPOSE 3000
 
-CMD ["npm", "run","start:prod" ]
+CMD ["npm", "run","start:prod" ]                 

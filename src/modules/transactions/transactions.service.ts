@@ -25,6 +25,7 @@ export class TransactionsService {
       name,
       type,
       value,
+      paymentType,
     }: CreateTransactionDto,
   ) {
     await this.validateOwner({ userId, bankAccountId, categoryId });
@@ -40,6 +41,7 @@ export class TransactionsService {
         type,
         value,
         userId,
+        paymentType,
       },
       select: {
         bankAccountId: true,
@@ -100,6 +102,7 @@ export class TransactionsService {
       value,
       type,
       date,
+      paymentType,
     }: UpdateTransactionDto,
   ) {
     if (type === 'EXPENSE') value *= -1;
@@ -118,6 +121,7 @@ export class TransactionsService {
         value,
         categoryId,
         bankAccountId,
+        paymentType,
         date,
       },
     });

@@ -8,6 +8,7 @@ import {
   IsUUID,
 } from 'class-validator';
 import { TransactionTypes } from '../entities/Transaction';
+import { PaymentTypes } from '../entities/PaymentTypes';
 
 export class CreateTransactionDto {
   @IsString()
@@ -36,4 +37,9 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   @IsEnum(TransactionTypes)
   type: TransactionTypes;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(PaymentTypes)
+  paymentType: PaymentTypes;
 }
