@@ -1,13 +1,10 @@
 services:
   app:
     build:
-      context:
+      context: .
     ports:
-      - '3000: 3000'
+      - '80:3000'
     environment:
       - NODE ENV=production
-      - DB_HOST=${DB_HOST]
-      - DB PORT ${DB_PORT]
-      - DB USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB DATABASE=${DB DATABASE}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}

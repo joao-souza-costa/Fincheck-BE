@@ -64,6 +64,16 @@ enum TransactionEnum {
   @@map("transaction_enum")
 }
 
+enum PaymentTypeEnum {
+  CASH
+  CREDIT
+  DEBIT
+  PIX
+  BILLET
+
+  @@map("payment_type_enum")
+}
+
 model Transaction {
   id            String          @id @default(uuid()) @db.Uuid
   userId        String          @map("user_id") @db.Uuid
@@ -73,6 +83,7 @@ model Transaction {
   value         Float
   date          DateTime
   type          TransactionEnum
+  paymentType   PaymentTypeEnum @default(PIX) @map("payment_type")
 
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   bankAccount BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
