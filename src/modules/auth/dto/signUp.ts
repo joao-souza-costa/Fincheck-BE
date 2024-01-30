@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class SignUpDto {
   @IsString()
@@ -13,5 +19,6 @@ export class SignUpDto {
   @IsString({ message: 'A senha precisa ser uma string' })
   @IsNotEmpty()
   @MinLength(8)
+  @MaxLength(12)
   password: string;
 }

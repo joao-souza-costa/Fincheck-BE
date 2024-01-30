@@ -10,9 +10,26 @@ import { BankAccountsModule } from './modules/bank-accounts/bank-accounts.module
 import { HelpersModule } from './shared/helpers/helpers.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { AppModules } from './modules/app/app.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { env } from 'src/shared/config/env';
 
 @Module({
   imports: [
+    MailerModule.forRoot({
+      transport: {
+        service: 'Gmail',
+        port: 465,
+        secure: true,
+        host: 'smtp.gmail.com',
+        auth: {
+          user: env.gmailEmail,
+          pass: env.gmailPassword,
+        },
+      },
+      defaults: {
+        from: `${env.gmailUserName} <${env.gmailEmail}>`,
+      },
+    }),
     AppModules,
     UsersModule,
     DatabaseModule,

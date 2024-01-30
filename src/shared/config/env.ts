@@ -9,11 +9,26 @@ class Env {
   @IsString()
   @IsNotEmpty()
   jwtSecret: string;
+
+  @IsString()
+  @IsNotEmpty()
+  gmailEmail: string;
+
+  @IsString()
+  @IsNotEmpty()
+  gmailPassword: string;
+
+  @IsString()
+  @IsNotEmpty()
+  gmailUserName: string;
 }
 
 export const env: Env = plainToInstance(Env, {
   jwtSecret: process.env.JWT_SECRET,
   dbURL: process.env.DATABASE_URL,
+  gmailEmail: process.env.GMAIL_EMAIL,
+  gmailPassword: process.env.GMAIL_PASSWORD,
+  gmailUserName: process.env.GMAIL_USER_NAME,
 });
 
 const erros = validateSync(env);

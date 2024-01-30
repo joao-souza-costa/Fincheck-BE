@@ -11,13 +11,16 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid()) @db.Uuid
-  name         String
-  email        String        @unique
-  password     String
-  bankAccounts BankAccount[]
-  categories   Category[]
-  transactions Transaction[]
+  id                  String               @id @default(uuid()) @db.Uuid
+  name                String
+  email               String               @unique
+  password            String
+  verifiedEmail       Boolean              @default(false) @map("verified_email")
+  
+  bankAccounts        BankAccount[]
+  categories          Category[]
+  transactions        Transaction[]
+  resetPasswordTokens ResetPasswordToken[]
 
   @@map("users")
 }
@@ -90,4 +93,14 @@ model Transaction {
   category    Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   @@map("transactions")
+}
+
+model ResetPasswordToken {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @unique @map("user_id") @db.Uuid
+  expired_date DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reset_password_token")
 }
