@@ -1,4 +1,4 @@
-export default (userName, tokenId) => `<!DOCTYPE HTML
+export default (userName, frontHost) => `<!DOCTYPE HTML
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
   xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -283,7 +283,7 @@ export default (userName, tokenId) => `<!DOCTYPE HTML
                               <!--[if mso]><style>.v-button {background: transparent !important;}</style><![endif]-->
                               <div align="left">
                                 <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:52px; v-text-anchor:middle; width:191px;" arcsize="2%"  stroke="f" fillcolor="#087f5b"><w:anchorlock/><center style="color:#FFFFFF;"><![endif]-->
-                                <a href="https://js-company.netlify.app/reset-password/${tokenId}" target="_blank" class="v-button"
+                                <a href="${frontHost}" target="_blank" class="v-button"
                                   style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #087f5b; border-radius: 1px;-webkit-border-radius: 1px; -moz-border-radius: 1px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
                                   <span style="display:block;padding:15px 40px;line-height:120%;"><span
                                       style="font-size: 18px; line-height: 21.6px;">Resetar senha</span></span>

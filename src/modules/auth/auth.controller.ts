@@ -40,8 +40,8 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
-    @Param('id') TokenId: string,
+    @Param('id') tokenId: string,
   ) {
-    return this.authService.resetPassword(resetPasswordDto, TokenId);
+    return this.authService.resetPassword(resetPasswordDto, tokenId);
   }
 }

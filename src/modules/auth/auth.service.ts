@@ -8,7 +8,7 @@ import {
 import { add } from 'date-fns';
 import { UsersRepository } from 'src/shared/database/repositories/users.repositories';
 import { compare, hash } from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { SignInDto } from './dto/signIn';
 import { SignUpDto } from './dto/signUp';
 import { SendResetPasswordEmailDto } from './dto/sendResetPasswordEmail';
@@ -16,7 +16,7 @@ import { ResetPasswordTokenRepository } from 'src/shared/database/repositories/r
 import { ResetPasswordDto } from './dto/resetPasswordDto';
 import { MailerService } from '@nestjs-modules/mailer';
 import recoveryEmail from 'src/email/recorveryPassword/';
-
+import { env } from 'src/shared/config/env';
 @Injectable()
 export class AuthService {
   constructor(
@@ -41,7 +41,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const token = await this.generateJWT(user.id);
+    const token = await this.generateJWT({ sub: user.id });
 
     return { token };
   }
@@ -79,7 +79,7 @@ export class AuthService {
       },
     });
 
-    const token = await this.generateJWT(user.id);
+    const token = await this.generateJWT({ sub: user.id });
 
     return { token };
   }
@@ -92,72 +92,62 @@ export class AuthService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    let token = await this.resetPasswordTokenRepo.findUnique({
-      where: { userId: user.id },
-      select: { expired_date: true, id: true },
-    });
-
-    if (!token) {
-      token = await this.resetPasswordTokenRepo.create({
-        data: {
-          userId: user.id,
-          expired_date: add(Date.now(), { days: 4 }),
-        },
-      });
-    }
-
-    const isExpiredToken = new Date() > token.expired_date;
-
-    if (token && isExpiredToken) {
-      await this.resetPasswordTokenRepo.update({
-        where: {
-          id: token.id,
-        },
-        data: {
-          expired_date: add(Date.now(), { days: 4 }),
-        },
-      });
-    }
+    const token = await this.generateJWT(
+      { sub: user.id, email: user.email },
+      { expiresIn: '3h' },
+    );
 
     await this.mailerService.sendMail({
       to: `${user.name} <${user.email}>`,
       subject: 'Email para a recuperação de senha',
-      html: recoveryEmail(user.name, token.id),
+      html: recoveryEmail(
+        user.name,
+        env.frontURL.concat(`/forgot-password/${token.replaceAll('.', '-')}`),
+      ),
     });
   }
 
   async resetPassword({ password }: ResetPasswordDto, currentToken: string) {
-    const token = await this.resetPasswordTokenRepo.findUnique({
-      where: { id: currentToken },
-      select: { expired_date: true, userId: true },
-    });
-
-    if (!token) throw new NotFoundException('Token not found');
-
-    const isExpiredToken = new Date() > token.expired_date;
-
-    if (isExpiredToken) throw new UnauthorizedException('Token expired');
-
-    const passHashed = await hash(password, 10);
-
-    await this.userRepo.update({
-      where: { id: token.userId },
-      data: {
-        password: passHashed,
-        resetPasswordTokens: {
-          delete: {
-            id: token.id,
-            userId: token.userId,
-          },
+    try {
+      const token = await this.jwtService.verifyAsync(
+        currentToken.replaceAll('$', '.'),
+        {
+          secret: env.jwtSecret,
         },
-      },
-    });
+      );
 
-    return { message: 'Password change with success' };
+      const user = this.userRepo.findUnique({
+        where: {
+          id: token.sub,
+        },
+      });
+
+      if (!user) throw new NotFoundException('User not found');
+
+      const passHashed = await hash(password, 10);
+
+      await this.userRepo.update({
+        where: { id: token.sub },
+        data: {
+          password: passHashed,
+        },
+      });
+
+      return { message: 'Password change with success' };
+    } catch (e) {
+      console.error(e);
+      throw new UnauthorizedException({
+        codeMessage: 'IVTOKEN',
+        message: 'Invalid token',
+      });
+    }
   }
 
-  private async generateJWT(userId: string) {
-    const token = await this.jwtService.signAsync({ sub: userId });
+  private async generateJWT(
+    jwtParams: Record<string, string>,
+    options?: JwtSignOptions,
+  ) {
+    const token = await this.jwtService.signAsync(jwtParams, options);
     return token;
   }
 }
