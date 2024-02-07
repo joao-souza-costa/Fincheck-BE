@@ -99,7 +99,7 @@ export class AuthService {
       subject: 'Email para a recuperação de senha',
       html: recoveryEmail(
         user.name,
-        env.frontURL.concat(`/forgot-password/${token.replaceAll('.', '-')}`),
+        env.frontURL.concat(`/forgot-password/${token.replaceAll('.', '$')}`),
       ),
     });
   }
