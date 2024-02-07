@@ -5,14 +5,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { add } from 'date-fns';
 import { UsersRepository } from 'src/shared/database/repositories/users.repositories';
 import { compare, hash } from 'bcryptjs';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { SignInDto } from './dto/signIn';
 import { SignUpDto } from './dto/signUp';
 import { SendResetPasswordEmailDto } from './dto/sendResetPasswordEmail';
-import { ResetPasswordTokenRepository } from 'src/shared/database/repositories/reset-password-token.repositories';
 import { ResetPasswordDto } from './dto/resetPasswordDto';
 import { MailerService } from '@nestjs-modules/mailer';
 import recoveryEmail from 'src/email/recorveryPassword/';
@@ -22,7 +20,6 @@ export class AuthService {
   constructor(
     private readonly userRepo: UsersRepository,
     private readonly jwtService: JwtService,
-    private readonly resetPasswordTokenRepo: ResetPasswordTokenRepository,
     private readonly mailerService: MailerService,
   ) {}
 
