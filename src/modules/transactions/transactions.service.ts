@@ -5,7 +5,7 @@ import { TransactionRepository } from 'src/shared/database/repositories/transact
 import { CategoryHelper } from 'src/shared/helpers/categories/categories.helpers';
 import { BankAccountHelper } from 'src/shared/helpers/bank-accounts/bank-accounts.helpers';
 import { TransactionHelper } from 'src/shared/helpers/transactions/transactions.helpers';
-import { TransactionTypes } from './entities/Transaction';
+import { TransactionPeriods, TransactionTypes } from './entities/Transaction';
 
 @Injectable()
 export class TransactionsService {
@@ -57,8 +57,8 @@ export class TransactionsService {
   findAll(
     userId: string,
     filters: {
-      month: number;
-      year: number;
+      date: string;
+      period: TransactionPeriods;
       bankAccountId?: string;
       type?: TransactionTypes;
     },
@@ -67,10 +67,7 @@ export class TransactionsService {
       where: {
         userId,
         type: filters.type,
-        date: {
-          gte: new Date(Date.UTC(filters.year, filters.month)),
-          lt: new Date(Date.UTC(filters.year, filters.month + 1)),
-        },
+        date: this.transactionHelper.filter(filters.period, filters.date),
         bankAccountId: filters.bankAccountId,
       },
       include: {
