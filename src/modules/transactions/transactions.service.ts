@@ -76,6 +76,7 @@ export class TransactionsService {
             icon: true,
             id: true,
             name: true,
+            type: true,
           },
         },
       },

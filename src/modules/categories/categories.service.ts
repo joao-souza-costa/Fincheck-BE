@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryRepository } from 'src/shared/database/repositories/categories.repositories';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -18,6 +18,17 @@ export class CategoriesService {
   }
 
   async create(userId: string, { icon, name, type }: CreateCategoryDto) {
+    const count = await this.categoryRepo.count({
+      where: {
+        userId: userId,
+      },
+    });
+
+    if (count > 19)
+      throw new BadRequestException(
+        'You achieve the max of category add allowed',
+      );
+
     return this.categoryRepo.create({
       data: {
         icon,

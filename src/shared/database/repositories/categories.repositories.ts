@@ -11,6 +11,9 @@ export class CategoryRepository {
     return this.prismaService.category.findMany(findManyDto);
   }
 
+  count(countDto: Prisma.CategoryCountArgs) {
+    return this.prismaService.category.count(countDto);
+  }
   findFirst(findFirstDto: Prisma.CategoryFindFirstArgs) {
     return this.prismaService.category.findFirst(findFirstDto);
   }
