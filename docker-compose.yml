@@ -8,3 +8,7 @@ services:
       - NODE ENV=production
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
+      - GMAIL_EMAIL=${GMAIL_EMAIL}
+      - GMAIL_PASSWORD=${GMAIL_PASSWORD}
+      - GMAIL_USER_NAME=${GMAIL_USER_NAME}
+      - FRONT_URL=${FRONT_URL}
