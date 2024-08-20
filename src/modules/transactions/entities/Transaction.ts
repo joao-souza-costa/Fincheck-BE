@@ -1,6 +1,7 @@
 export enum TransactionTypes {
   INCOME = 'INCOME',
   EXPENSE = 'EXPENSE',
+  SERVICE = 'SERVICE',
 }
 
 export enum TransactionPeriods {
