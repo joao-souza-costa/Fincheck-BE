@@ -119,10 +119,10 @@ model Client {
 model Appointment {
   id     String                @id @default(uuid()) @db.Uuid
   date   DateTime
-  status AppointmentStatusEnum
+  status AppointmentStatusEnum @default(OPEN)
 
-  clientId      String? @map("client_id") @db.Uuid
   userId        String  @map("user_id") @db.Uuid
+  clientId      String? @map("client_id") @db.Uuid
   categoryId    String? @map("category_id") @db.Uuid
   transactionId String? @unique @map("transaction_id") @db.Uuid
 

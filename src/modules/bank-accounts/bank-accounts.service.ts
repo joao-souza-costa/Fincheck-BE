@@ -11,21 +11,16 @@ export class BankAccountsService {
     private readonly bankAccountsHelper: BankAccountHelper,
   ) {}
 
-  create(
-    userId: string,
-    { name, initialBalance, type, color }: CreateBankAccountDto,
-  ) {
+  create(userId: string, { name, type, color }: CreateBankAccountDto) {
     return this.bankAccountsRepo.create({
       data: {
         name,
-        initialBalance,
         type,
         color,
         userId,
       },
       select: {
         name: true,
-        initialBalance: true,
         type: true,
         color: true,
       },
@@ -46,9 +41,6 @@ export class BankAccountsService {
           },
         },
       },
-      orderBy: {
-        initialBalance: 'desc',
-      },
     });
 
     return bankAccounts;
@@ -61,7 +53,7 @@ export class BankAccountsService {
   async update(
     userId: string,
     id: string,
-    { name, initialBalance, type, color }: UpdateBankAccountDto,
+    { name, type, color }: UpdateBankAccountDto,
   ) {
     await this.bankAccountsHelper.validateOwner(id, userId);
 
@@ -69,13 +61,11 @@ export class BankAccountsService {
       where: { id },
       data: {
         name,
-        initialBalance,
         type,
         color,
       },
       select: {
         name: true,
-        initialBalance: true,
         type: true,
         color: true,
       },
