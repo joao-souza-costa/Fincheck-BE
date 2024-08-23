@@ -13,6 +13,7 @@ import { AppModules } from './modules/app/app.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { env } from 'src/shared/config/env';
 import { AppointmentsModule } from './modules/appointments/appointments.module';
+import { ClientModule } from './modules/client/client.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AppointmentsModule } from './modules/appointments/appointments.module';
     HelpersModule,
     TransactionsModule,
     AppointmentsModule,
+    ClientModule,
   ],
   controllers: [],
   providers: [

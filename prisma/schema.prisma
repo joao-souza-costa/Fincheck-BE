@@ -45,11 +45,13 @@ model BankAccount {
 }
 
 model Category {
-  id     String          @id @default(uuid()) @db.Uuid
-  userId String          @map("user_id") @db.Uuid
-  name   String
-  icon   String
-  type   TransactionEnum
+  id          String          @id @default(uuid()) @db.Uuid
+  userId      String          @map("user_id") @db.Uuid
+  name        String
+  icon        String
+  observation String          @default("")
+  value       Float           @default(0)
+  type        TransactionEnum
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
@@ -108,10 +110,10 @@ model Client {
   id          String        @id @default(uuid()) @db.Uuid
   name        String
   email       String        @unique
-  password    String
+  password    String?
   phone       String
-  birthDate   DateTime      @map("birth_date")
-  Appointment Appointment[]
+  birthDate   DateTime?     @map("birth_date")
+  appointments Appointment[]
 
   @@map("client")
 }
@@ -123,12 +125,11 @@ model Appointment {
 
   userId        String  @map("user_id") @db.Uuid
   clientId      String? @map("client_id") @db.Uuid
-  categoryId    String? @map("category_id") @db.Uuid
   transactionId String? @unique @map("transaction_id") @db.Uuid
 
+  category     Category[]
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   client       Client?      @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  category     Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   transactions Transaction? @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 
   @@map("appointments")

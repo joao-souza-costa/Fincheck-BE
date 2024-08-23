@@ -28,4 +28,8 @@ export class AppointmentRepository {
   findFirst(findFirstDto: Prisma.AppointmentFindFirstArgs) {
     return this.prismaService.appointment.findFirst(findFirstDto);
   }
+
+  findUnique(findFirstDto: Prisma.AppointmentFindUniqueArgs) {
+    return this.prismaService.appointment.findUnique(findFirstDto);
+  }
 }
