@@ -30,6 +30,9 @@ export class AppointmentRepository {
   }
 
   findUnique(findFirstDto: Prisma.AppointmentFindUniqueArgs) {
-    return this.prismaService.appointment.findUnique(findFirstDto);
+    return this.prismaService.appointment.findUnique({
+      where: findFirstDto.where,
+      include: findFirstDto.include,
+    });
   }
 }

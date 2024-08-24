@@ -15,6 +15,13 @@ export class ClientRepository {
     return this.prismaService.client.findUnique(findUniqueDto);
   }
 
+  findClientWithAppointments(email: string) {
+    return this.prismaService.client.findUnique({
+      where: { email },
+      include: { appointments: true },
+    });
+  }
+
   update(updateDto: Prisma.ClientUpdateArgs) {
     return this.prismaService.client.update(updateDto);
   }

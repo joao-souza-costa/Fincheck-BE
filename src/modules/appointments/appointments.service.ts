@@ -42,8 +42,29 @@ export class AppointmentsService {
   findAll(userId: string, filters: { status: AppointmentStatusEnum }) {
     return this.appointmentsRepo.findMany({
       where: { userId, status: filters.status },
-      include: {
-        category: true,
+      select: {
+        id: true,
+        date: true,
+        status: true,
+        client: {
+          select: {
+            name: true,
+            phone: true,
+            email: true,
+          },
+        },
+        transaction: {
+          select: {
+            paymentType: true,
+            value: true,
+          },
+        },
+        categories: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       orderBy: {
         status: 'desc',
@@ -63,13 +84,14 @@ export class AppointmentsService {
       throw new ConflictException('Appointment already reserved');
     }
 
-    let client = await this.clientRepo.findUnique({
-      where: { email: email },
-      select: { id: true, appointments: true },
-    });
+    type clientWithAppointments = Prisma.PromiseReturnType<
+      typeof this.clientRepo.findClientWithAppointments
+    >;
+
+    let client = await this.clientRepo.findClientWithAppointments(email);
 
     if (!client) {
-      client = await this.clientRepo.create({
+      client = (await this.clientRepo.create({
         data: {
           name,
           email: email,
@@ -79,12 +101,12 @@ export class AppointmentsService {
           id: true,
           email: true,
         },
-      });
+      })) as clientWithAppointments;
     }
 
     const isValid = this.validateAppointments(
       appointment.date,
-      client.appointments,
+      client?.appointments,
     );
 
     if (!isValid) {
@@ -96,8 +118,8 @@ export class AppointmentsService {
       data: {
         clientId: client.id,
         status: AppointmentStatusEnum.RESERVED,
-        category: {
-          connect: [{ id: service }],
+        categories: {
+          connect: service.map((id) => ({ id })),
         },
       },
     });
@@ -110,7 +132,7 @@ export class AppointmentsService {
     appointmentId: string,
     confirmAppointmentDto: ConfirmAppointmentDto,
   ) {
-    /*  const appointment = await this.appointmentHelper.validateOwner(
+    const appointment = await this.appointmentHelper.validateOwner(
       appointmentId,
       userId,
     );
@@ -119,22 +141,22 @@ export class AppointmentsService {
       throw new ConflictException('Appointment already confirmed');
     }
 
-    const category = appointment?.category;
-    const transactionLabel = `${category.name}: ${appointment?.user.name}`;
+    const transactionLabel = `${appointment?.categories
+      .map((item) => item.name)
+      .join(', ')}: ${appointment?.client.name}`;
 
     await this.appointmentsRepo.update({
       where: { id: appointment.id },
       data: {
         status: AppointmentStatusEnum.CONFIRMED,
-        transactions: {
+        transaction: {
           create: {
             date: confirmAppointmentDto.date,
             paymentType: confirmAppointmentDto.paymentType,
             bankAccountId: confirmAppointmentDto.bankAccountId,
             name: transactionLabel,
-            value: 0, //ver com a maisa sobre preços volateis
+            value: confirmAppointmentDto.value,
             type: TransactionEnum.SERVICE,
-            categoryId: category.id,
             userId,
           },
         },
@@ -142,13 +164,12 @@ export class AppointmentsService {
     });
 
     return appointment;
- */
   }
 
   validateAppointments(date: Date, appointments: Appointment[]) {
-    if (!appointments.length) return true;
+    if (!appointments?.length) return true;
 
-    const MAX_WEEK_APPOINTMENTS = 2;
+    const MAX_APPOINTMENTS_PEER_WEEK = 2;
     let hasAppearedInSameWeek = 0;
 
     return !appointments.some((appointment) => {
@@ -156,7 +177,7 @@ export class AppointmentsService {
 
       return (
         isSameDay(appointment.date, date) ||
-        hasAppearedInSameWeek >= MAX_WEEK_APPOINTMENTS
+        hasAppearedInSameWeek >= MAX_APPOINTMENTS_PEER_WEEK
       );
     });
   }

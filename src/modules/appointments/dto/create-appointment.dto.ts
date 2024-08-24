@@ -5,8 +5,4 @@ export class CreateAppointmentDto {
   @IsNotEmpty()
   @IsDateString()
   date: Date;
-
-  @IsOptional({})
-  @IsEnum(AppointmentStatusEnum)
-  status: AppointmentStatusEnum;
 }

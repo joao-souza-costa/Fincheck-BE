@@ -1,5 +1,12 @@
-import { Expose, Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsArray,
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  Length,
+} from 'class-validator';
 
 export class ReserveAppointmentDto {
   @IsString()
@@ -17,8 +24,9 @@ export class ReserveAppointmentDto {
   @Length(11, 11)
   phone: string;
 
-  @IsString()
+  @IsArray()
   @IsUUID()
   @IsNotEmpty()
-  service: string;
+  @IsString({ each: true })
+  service: string[];
 }
